@@ -1,14 +1,12 @@
 import { execSync } from 'child_process';
 import { isPath, mkPath, clearDirectory } from './fileUtils.js';
-import fs from 'fs';
 
 
 function run(command) {
     try {
         execSync(command, { stdio: ['ignore', 'ignore', 'inherit'] }); // need to change this
     } catch (error) {
-        console.log(error);
-        throw new AppError(`Error While Publishing`, 400)
+        throw new Error(`Error While Publishing`, 400);
     }
 }
 

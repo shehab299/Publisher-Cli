@@ -3,7 +3,6 @@ import path from 'path';
 
 
 
-
 function getDefault() {
 
     let defaultPath = '';

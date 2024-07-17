@@ -9,19 +9,30 @@ import parseLink from './publisher/parseLink.js';
 import publish from './publisher/publish.js';
 
 
-const REGISTRY_URL= 'https://github.com/shehab299/Registry.git'
-const REGISTRY_PATH= '/home/shehab/Desktop/faust-env/Registry'
-const DOWNLOADS_FOLDER= '/home/shehab/Desktop/faust-env/downloads'
+async function getToken(){
+    token = await checkToken();
 
-config(); 
+    if(token) {
+      return token;
+    }
 
-if(!process.env.FAUST_PATH) {
-  console.error('FAUST_PATH not set');
-  process.exit(1);
+    const result = await auth({ type: "oauth" });
+    token = result.token;
+    await saveToken(token);
 }
 
 
 async function main() {
+
+  config(); 
+
+  if(!process.env.FAUST_PATH) {
+    throw new Error('FAUST_PATH not set');
+  }
+
+  const registryUrl = 'https://github.com/shehab299/Registry.git';
+  const registryPath = path.join(process.env.FAUST_PATH, '.reg');
+  const downloadsFolder = path.join(process.env.FAUST_PATH, '.downloads');
 
   const pkgurl = process.argv[2];
 
@@ -31,56 +42,29 @@ async function main() {
 
   const { owner, repo } = parseLink(pkgurl);
 
-  let token = null;
-
-  try {
-    token = await checkToken();
-    if(!token) {
-      throw new Error('No valid token found');
-    }
-  } catch (error) {
-    try {
-      const result = await auth({ type: "oauth" });
-      token = result.token;
-      await saveToken(token);
-    } catch (authError) {
-      console.error('Authentication failed:', authError.message);
-      process.exit(1);
-    }
-  }
+  let token = getToken();
 
   const octokit = new Octokit({
     auth: token
   });
 
-
   let username = null;
 
-  try {
-    const { data: user } = await octokit.request('GET /user');
-    username = user.login;
-  } catch (apiError) {
-    console.log(apiError);
-    console.error('Failed to fetch authenticated user:', apiError.message);
-    process.exit(1);
-  }
+  const { data: user } = await octokit.request('GET /user');
 
-  const isCollab = await checkCollaborators(username, owner, repo, token);
+  const isCollab = await checkCollaborators(user.login, owner, repo, token);
 
   if (!isCollab) {
     throw new Error('User is not a collaborator on the repository');
   }
 
-  const registryUrl = REGISTRY_URL;
-  const registryPath = REGISTRY_PATH;
-  const downloadsFolder = DOWNLOADS_FOLDER;
-
   if(!pkgurl || !registryPath || !registryUrl){
     throw new Error("Missing required parameters");
   }
-
+ 
   await publish(registryPath, registryUrl, pkgurl, downloadsFolder, username);
 }
+
 
 main().catch((err) => {
   console.log(err);

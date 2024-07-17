@@ -57,7 +57,6 @@ async function saveToken(token){
 };
 
 
-export default checkToken;
 export { saveToken, checkToken };
 
 
