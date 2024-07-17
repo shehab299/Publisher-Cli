@@ -7,10 +7,11 @@ import { checkToken, saveToken } from './checkToken.js';
 import checkCollaborators from './publisher/checkCollabs.js';
 import parseLink from './publisher/parseLink.js';
 import publish from './publisher/publish.js';
-
+import path from 'path'
 
 async function getToken(){
-    token = await checkToken();
+
+    let token = await checkToken();
 
     if(token) {
       return token;
@@ -19,6 +20,8 @@ async function getToken(){
     const result = await auth({ type: "oauth" });
     token = result.token;
     await saveToken(token);
+
+    return token;
 }
 
 
@@ -42,7 +45,7 @@ async function main() {
 
   const { owner, repo } = parseLink(pkgurl);
 
-  let token = getToken();
+  let token = await getToken();
 
   const octokit = new Octokit({
     auth: token
@@ -62,7 +65,9 @@ async function main() {
     throw new Error("Missing required parameters");
   }
  
-  await publish(registryPath, registryUrl, pkgurl, downloadsFolder, username);
+  await publish(registryPath, registryUrl, pkgurl, downloadsFolder, user.login);
+
+  console.log('Package published successfully');
 }
 
 

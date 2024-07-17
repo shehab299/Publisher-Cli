@@ -4,7 +4,9 @@ import { isPath, mkPath, clearDirectory } from './fileUtils.js';
 
 function run(command) {
     try {
-        execSync(command, { stdio: ['ignore', 'ignore', 'inherit'] }); // need to change this
+        execSync(command, {
+            stdio: ['ignore', 'ignore', 'ignore']
+        } ); // need to change this
     } catch (error) {
         throw new Error(`Error While Publishing`, 400);
     }

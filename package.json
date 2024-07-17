@@ -1,5 +1,5 @@
 {
-  "name": "oauth",
+  "name": "publish",
   "version": "1.0.0",
   "main": "main.js",
   "bin" : "main.js",

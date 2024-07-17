@@ -15,7 +15,6 @@ async function publish(registryPath, registryUrl, pkgRepo, downloadsFolder, auth
     updateRegistry(git, registryPath, registryUrl);
 
     const parts = parseUrl(pkgRepo);
-    const owner = parts.owner;
     const packageName = parts.repo;
 
     const pkgFolder = downloadPackage(pkgRepo, packageName, downloadsFolder);
