@@ -1,0 +1,13 @@
+{
+  "name": "oauth",
+  "version": "1.0.0",
+  "main": "main.js",
+  "bin" : "main.js",
+  "type": "module",
+  "author": "Shehab Khaled",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "axios": "^1.7.2"
+  }
+}
